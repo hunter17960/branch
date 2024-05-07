@@ -2,8 +2,7 @@ import 'dart:io';
 import 'package:branch/bloc_observer.dart';
 import 'package:branch/features/home/logic/cubit.dart';
 import 'package:branch/features/home/logic/states.dart';
-import 'package:branch/features/home/ui/main_page_desktop.dart';
-import 'package:branch/features/home/ui/main_page_mobile.dart';
+import 'package:branch/features/home/ui/main_page.dart';
 import 'package:branch/core/themes/theme.dart';
 import 'package:branch/firebase_options.dart';
 import 'package:flutter/material.dart';
@@ -31,8 +30,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    final orientation = MediaQuery.of(context).orientation;
     return BlocProvider(
       create: (context) => HomeCubit()..getBranches(),
       child: BlocConsumer<HomeCubit, HomeStates>(
@@ -46,9 +43,7 @@ class MyApp extends StatelessWidget {
               debugShowCheckedModeBanner: false,
               title: 'Flutter Demo',
               theme: mainTheme,
-              home: width > 850 || orientation == Orientation.landscape
-                  ? MainPageDesktop()
-                  : MainPageMobile(),
+              home: MainPage(),
             ),
           );
         },
