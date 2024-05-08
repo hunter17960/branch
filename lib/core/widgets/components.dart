@@ -5,6 +5,7 @@ Widget defaultFormField({
   required TextEditingController controller,
   required TextInputType type,
   final FormFieldValidator<String>? validator,
+  TextAlign? textAlign,
   String? label,
   int? minLines,
   int? maxLines,
@@ -12,6 +13,8 @@ Widget defaultFormField({
   bool? expands,
 }) =>
     TextFormField(
+      validator: validator,
+      textAlign: textAlign ?? TextAlign.left,
       minLines: minLines,
       maxLines: maxLines,
       controller: controller,

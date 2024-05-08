@@ -1,7 +1,6 @@
 import 'package:branch/core/helpers/spacing.dart';
 import 'package:branch/core/themes/styles.dart';
 import 'package:branch/core/widgets/components.dart';
-import 'package:branch/features/home/data/models/branch.dart';
 import 'package:branch/features/home/logic/cubit.dart';
 import 'package:branch/features/home/logic/states.dart';
 import 'package:flutter/material.dart';
@@ -9,42 +8,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class MainPage extends StatelessWidget {
-  MainPage({super.key});
-  final TextEditingController customNoController = TextEditingController();
-  final TextEditingController arabicNameController = TextEditingController();
-  final TextEditingController arabicDescriptionController =
-      TextEditingController();
-  final TextEditingController englishNameController = TextEditingController();
-  final TextEditingController englishDescriptionController =
-      TextEditingController();
-  final TextEditingController noteController = TextEditingController();
-  final TextEditingController addressController = TextEditingController();
+  const MainPage({super.key});
   @override
   Widget build(BuildContext context) {
-    if (HomeCubit.get(context).branches.isNotEmpty) {
-      customNoController.text = HomeCubit.get(context)
-          .branches[HomeCubit.get(context).currentIndex]
-          .customNo
-          .toString();
-      arabicNameController.text = HomeCubit.get(context)
-          .branches[HomeCubit.get(context).currentIndex]
-          .arabicName;
-      arabicDescriptionController.text = HomeCubit.get(context)
-          .branches[HomeCubit.get(context).currentIndex]
-          .arabicDescription;
-      englishNameController.text = HomeCubit.get(context)
-          .branches[HomeCubit.get(context).currentIndex]
-          .englishName;
-      englishDescriptionController.text = HomeCubit.get(context)
-          .branches[HomeCubit.get(context).currentIndex]
-          .englishDescription;
-      noteController.text = HomeCubit.get(context)
-          .branches[HomeCubit.get(context).currentIndex]
-          .note;
-      addressController.text = HomeCubit.get(context)
-          .branches[HomeCubit.get(context).currentIndex]
-          .address;
-    }
     return BlocConsumer<HomeCubit, HomeStates>(listener: (context, state) {
       if (state is AddBranchSuccess || state is UpdateBranchSuccess) {
         HomeCubit.get(context).getBranches();
@@ -62,7 +28,7 @@ class MainPage extends StatelessWidget {
           actions: [
             IconButton(
               onPressed: () {
-                cubit.addBranch(branch: Branch.empty());
+                cubit.addBranch();
               },
               icon: const Icon(Icons.add_circle),
             ),
@@ -71,18 +37,7 @@ class MainPage extends StatelessWidget {
             ),
             IconButton(
               onPressed: () {
-                Branch newBranch = Branch(
-                  branchId: cubit.branches[cubit.currentIndex].branchId,
-                  customNo: int.parse(customNoController.text),
-                  arabicName: arabicNameController.text,
-                  arabicDescription: arabicDescriptionController.text,
-                  englishName: englishNameController.text,
-                  englishDescription: englishDescriptionController.text,
-                  note: noteController.text,
-                  address: addressController.text,
-                );
-                newBranch.docId = cubit.branches[cubit.currentIndex].docId;
-                cubit.updateBranch(branch: newBranch);
+                cubit.updateBranch();
               },
               icon: const Icon(Icons.save_rounded),
             ),
@@ -176,7 +131,7 @@ class MainPage extends StatelessWidget {
                                 height: 65.h,
                                 width: 220.w,
                                 child: defaultFormField(
-                                  controller: customNoController,
+                                  controller: cubit.customNoController,
                                   type: TextInputType.number,
                                 ),
                               ),
@@ -200,7 +155,8 @@ class MainPage extends StatelessWidget {
                                 height: 65.h,
                                 width: 220.w,
                                 child: defaultFormField(
-                                  controller: arabicNameController,
+                                  textAlign: TextAlign.right,
+                                  controller: cubit.arabicNameController,
                                   type: TextInputType.name,
                                 ),
                               ),
@@ -220,7 +176,8 @@ class MainPage extends StatelessWidget {
                                 height: 65.h,
                                 width: 220.w,
                                 child: defaultFormField(
-                                  controller: arabicDescriptionController,
+                                  textAlign: TextAlign.right,
+                                  controller: cubit.arabicDescriptionController,
                                   type: TextInputType.name,
                                 ),
                               ),
@@ -244,7 +201,7 @@ class MainPage extends StatelessWidget {
                                 height: 65.h,
                                 width: 220.w,
                                 child: defaultFormField(
-                                  controller: englishNameController,
+                                  controller: cubit.englishNameController,
                                   type: TextInputType.name,
                                 ),
                               ),
@@ -264,7 +221,8 @@ class MainPage extends StatelessWidget {
                                 height: 65.h,
                                 width: 220.w,
                                 child: defaultFormField(
-                                  controller: englishDescriptionController,
+                                  controller:
+                                      cubit.englishDescriptionController,
                                   type: TextInputType.name,
                                 ),
                               ),
@@ -290,7 +248,7 @@ class MainPage extends StatelessWidget {
                                 child: defaultFormField(
                                   expands: true,
                                   maxLines: null,
-                                  controller: noteController,
+                                  controller: cubit.noteController,
                                   type: TextInputType.name,
                                 ),
                               ),
@@ -312,7 +270,7 @@ class MainPage extends StatelessWidget {
                                 child: defaultFormField(
                                   expands: true,
                                   maxLines: null,
-                                  controller: addressController,
+                                  controller: cubit.addressController,
                                   type: TextInputType.name,
                                 ),
                               ),
@@ -371,7 +329,7 @@ class MainPage extends StatelessWidget {
                                 child: SizedBox(
                                   height: 65.h,
                                   child: defaultFormField(
-                                    controller: customNoController,
+                                    controller: cubit.customNoController,
                                     type: TextInputType.number,
                                   ),
                                 ),
@@ -391,7 +349,8 @@ class MainPage extends StatelessWidget {
                       child: SizedBox(
                         height: 65.h,
                         child: defaultFormField(
-                          controller: arabicNameController,
+                          textAlign: TextAlign.right,
+                          controller: cubit.arabicNameController,
                           type: TextInputType.name,
                         ),
                       ),
@@ -406,7 +365,8 @@ class MainPage extends StatelessWidget {
                       child: SizedBox(
                         height: 65.h,
                         child: defaultFormField(
-                          controller: arabicDescriptionController,
+                          textAlign: TextAlign.right,
+                          controller: cubit.arabicDescriptionController,
                           type: TextInputType.name,
                         ),
                       ),
@@ -421,7 +381,7 @@ class MainPage extends StatelessWidget {
                       child: SizedBox(
                         height: 65.h,
                         child: defaultFormField(
-                          controller: englishNameController,
+                          controller: cubit.englishNameController,
                           type: TextInputType.name,
                         ),
                       ),
@@ -436,7 +396,7 @@ class MainPage extends StatelessWidget {
                       child: SizedBox(
                         height: 65.h,
                         child: defaultFormField(
-                          controller: englishDescriptionController,
+                          controller: cubit.englishDescriptionController,
                           type: TextInputType.name,
                         ),
                       ),
@@ -453,7 +413,7 @@ class MainPage extends StatelessWidget {
                         child: defaultFormField(
                           expands: true,
                           maxLines: null,
-                          controller: noteController,
+                          controller: cubit.noteController,
                           type: TextInputType.multiline,
                         ),
                       ),
@@ -470,7 +430,7 @@ class MainPage extends StatelessWidget {
                         child: defaultFormField(
                           expands: true,
                           maxLines: null,
-                          controller: addressController,
+                          controller: cubit.addressController,
                           type: TextInputType.multiline,
                         ),
                       ),

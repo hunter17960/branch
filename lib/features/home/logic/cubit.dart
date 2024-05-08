@@ -1,5 +1,6 @@
 import 'package:branch/features/home/data/models/branch.dart';
 import 'package:branch/features/home/logic/states.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -7,11 +8,36 @@ class HomeCubit extends Cubit<HomeStates> {
   HomeCubit() : super(AppInitial());
 
   static HomeCubit get(context) => BlocProvider.of(context);
+  final TextEditingController customNoController = TextEditingController();
+  final TextEditingController arabicNameController = TextEditingController();
+  final TextEditingController arabicDescriptionController =
+      TextEditingController();
+  final TextEditingController englishNameController = TextEditingController();
+  final TextEditingController englishDescriptionController =
+      TextEditingController();
+  final TextEditingController noteController = TextEditingController();
+  final TextEditingController addressController = TextEditingController();
   List<Branch> branches = [];
   int currentIndex = 0;
+
+  setBranchControllers({required int currentIndex}) {
+    if (branches.isNotEmpty) {
+      customNoController.text = branches[currentIndex].customNo.toString();
+      arabicNameController.text = branches[currentIndex].arabicName;
+      arabicDescriptionController.text =
+          branches[currentIndex].arabicDescription;
+      englishNameController.text = branches[currentIndex].englishName;
+      englishDescriptionController.text =
+          branches[currentIndex].englishDescription;
+      noteController.text = branches[currentIndex].note;
+      addressController.text = branches[currentIndex].address;
+    }
+  }
+
   void changeIndex(int index) {
     if (branches.length - 1 >= index && index >= 0) {
       currentIndex = index;
+      setBranchControllers(currentIndex: currentIndex);
       emit(AppChangeBottomNavBar());
     }
   }
@@ -29,16 +55,16 @@ class HomeCubit extends Cubit<HomeStates> {
         branch.docId = element.id;
         branches.add(branch);
       }
+      setBranchControllers(currentIndex: currentIndex);
       emit(GetBranchesSuccess());
     }).catchError((error) {
       emit(GetBranchesError());
     });
   }
 
-  void addBranch({
-    required Branch branch,
-  }) async {
+  void addBranch() async {
     emit(AddBranchLoading());
+    Branch branch = Branch.empty();
     int latestBranchId = await _fetchLastBranchId();
     branch.branchId = latestBranchId + 1;
     FirebaseFirestore.instance
@@ -51,14 +77,23 @@ class HomeCubit extends Cubit<HomeStates> {
     });
   }
 
-  void updateBranch({
-    required Branch branch,
-  }) async {
+  void updateBranch() async {
+    Branch newBranch = Branch(
+      branchId: branches[currentIndex].branchId,
+      customNo: int.parse(customNoController.text),
+      arabicName: arabicNameController.text,
+      arabicDescription: arabicDescriptionController.text,
+      englishName: englishNameController.text,
+      englishDescription: englishDescriptionController.text,
+      note: noteController.text,
+      address: addressController.text,
+    );
+    newBranch.docId = branches[currentIndex].docId;
     emit(UpdateBranchLoading());
     FirebaseFirestore.instance
         .collection('branches')
-        .doc(branch.docId)
-        .update(branch.toJson())
+        .doc(newBranch.docId)
+        .update(newBranch.toJson())
         .then((value) {
       emit(UpdateBranchSuccess());
     }).catchError((error) {
@@ -76,7 +111,6 @@ Future<int> _fetchLastBranchId() async {
   if (snapshot.docs.isNotEmpty) {
     return snapshot.docs.first['branch id'];
   } else {
-    // If no branches exist yet, return -1 as the last branch ID
     return -1;
   }
 }
