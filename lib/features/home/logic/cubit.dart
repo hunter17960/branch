@@ -7,6 +7,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class HomeCubit extends Cubit<HomeStates> {
   HomeCubit() : super(AppInitial());
 
+  Size designSize = const Size(843, 1197);
+  Size designSizePortrait = const Size(843, 1197);
+  Size designSizeLandscape = const Size(1600, 747);
   static HomeCubit get(context) => BlocProvider.of(context);
   final TextEditingController customNoController = TextEditingController();
   final TextEditingController arabicNameController = TextEditingController();
@@ -20,7 +23,7 @@ class HomeCubit extends Cubit<HomeStates> {
   List<Branch> branches = [];
   int currentIndex = 0;
 
-  setBranchControllers({required int currentIndex}) {
+  setBranchControllers() {
     if (branches.isNotEmpty) {
       customNoController.text = branches[currentIndex].customNo.toString();
       arabicNameController.text = branches[currentIndex].arabicName;
@@ -34,10 +37,27 @@ class HomeCubit extends Cubit<HomeStates> {
     }
   }
 
+  void getDesignSize({required Orientation orientation}) {
+    if (orientation == Orientation.landscape ||
+        orientation == Orientation.portrait) {
+      // Toggle design size based on orientation
+      if ((orientation == Orientation.landscape &&
+              designSize != designSizeLandscape) ||
+          (orientation == Orientation.portrait &&
+              designSize != designSizePortrait)) {
+        designSize = designSize == designSizePortrait
+            ? designSizeLandscape
+            : designSizePortrait;
+        emit(DesignSizeChanged());
+        print("${designSize.width} /// ${designSize.height}");
+      }
+    }
+  }
+
   void changeIndex(int index) {
     if (branches.length - 1 >= index && index >= 0) {
       currentIndex = index;
-      setBranchControllers(currentIndex: currentIndex);
+      setBranchControllers();
       emit(AppChangeBottomNavBar());
     }
   }
@@ -55,7 +75,7 @@ class HomeCubit extends Cubit<HomeStates> {
         branch.docId = element.id;
         branches.add(branch);
       }
-      setBranchControllers(currentIndex: currentIndex);
+      setBranchControllers();
       emit(GetBranchesSuccess());
     }).catchError((error) {
       emit(GetBranchesError());

@@ -22,8 +22,7 @@ Widget defaultFormField({
       enabled: isClickable,
       expands: expands ?? false,
       decoration: InputDecoration(
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 12.0, vertical: 3.0),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12.0),
         labelText: label,
         border: const OutlineInputBorder(
           borderSide: BorderSide(

@@ -5,6 +5,7 @@ import 'package:branch/features/home/logic/states.dart';
 import 'package:branch/features/home/ui/main_page.dart';
 import 'package:branch/core/themes/theme.dart';
 import 'package:branch/firebase_options.dart';
+import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -22,7 +23,10 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(const MyApp());
+  runApp(DevicePreview(
+    enabled: false,
+    builder: (context) => const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -35,16 +39,21 @@ class MyApp extends StatelessWidget {
       child: BlocConsumer<HomeCubit, HomeStates>(
         listener: (context, state) {},
         builder: (context, state) {
+          HomeCubit cubit = HomeCubit.get(context);
+          final orientation = MediaQuery.of(context).orientation;
+          cubit.getDesignSize(orientation: orientation);
           return ScreenUtilInit(
-            designSize: const Size(843, 1197),
+            designSize: cubit.designSize,
             minTextAdapt: true,
             splitScreenMode: true,
-            child: MaterialApp(
-              debugShowCheckedModeBanner: false,
-              title: 'Flutter Demo',
-              theme: mainTheme,
-              home: const MainPage(),
-            ),
+            builder: (context, child) {
+              return MaterialApp(
+                debugShowCheckedModeBanner: false,
+                title: 'Flutter Demo',
+                theme: mainTheme,
+                home: const MainPage(),
+              );
+            },
           );
         },
       ),

@@ -4,6 +4,10 @@ class AppInitial extends HomeStates {}
 
 class AppChangeBottomNavBar extends HomeStates {}
 
+class DesignSizeChanged extends HomeStates {}
+
+class ScaleFactorChanged extends HomeStates {}
+
 class GetBranchesLoading extends HomeStates {}
 
 class GetBranchesSuccess extends HomeStates {}
